@@ -15,7 +15,12 @@ import {
   Typography,
 } from '@mui/material'
 
-const pages = ['Home', 'About', 'Projects', 'Contact']
+const pages = [
+  { name: 'Home', href: '#home' },
+  { name: 'About', href: '#about' },
+  { name: 'Projects', href: '#projects' },
+  { name: 'Contact', href: '#contact' },
+]
 
 function Header() {
   const [anchorElNav, setAnchorElNav] = React.useState(null)
@@ -30,7 +35,7 @@ function Header() {
 
   return (
     <AppBar
-      position="static"
+      position="fixed"
       sx={{
         backgroundColor: 'white',
         boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
@@ -77,8 +82,14 @@ function Header() {
               open={Boolean(anchorElNav)}
               onClose={handleCloseNavMenu}>
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
+                <MenuItem key={page.name} onClick={handleCloseNavMenu}>
+                  <Typography
+                    component="a"
+                    href={page.href}
+                    textAlign="center"
+                    sx={{ textDecoration: 'none', color: 'inherit' }}>
+                    {page.name}
+                  </Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -111,7 +122,8 @@ function Header() {
             }}>
             {pages.map((page) => (
               <Button
-                key={page}
+                key={page.name}
+                href={page.href}
                 onClick={handleCloseNavMenu}
                 sx={{
                   mx: 1.5,
@@ -122,6 +134,7 @@ function Header() {
                   color: 'grey',
                   textTransform: 'uppercase',
                   position: 'relative',
+                  textDecoration: 'none',
                   '&:hover': {
                     color: 'black',
                   },
@@ -141,7 +154,7 @@ function Header() {
                     transform: 'scaleX(1)',
                   },
                 }}>
-                {page}
+                {page.name}
               </Button>
             ))}
           </Box>
