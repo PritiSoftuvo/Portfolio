@@ -1,4 +1,4 @@
-import React from 'react'
+import { useState } from 'react'
 import Header from './Header'
 import LinkedInIcon from '@mui/icons-material/LinkedIn'
 import GitHubIcon from '@mui/icons-material/GitHub'
@@ -6,10 +6,71 @@ import AddToHomeScreenIcon from '@mui/icons-material/AddToHomeScreen'
 import LocationOnIcon from '@mui/icons-material/LocationOn'
 import EmailIcon from '@mui/icons-material/Email'
 import PhoneIcon from '@mui/icons-material/Phone'
+import { TextField, Button } from '@mui/material'
+import emailjs from 'emailjs-com'
+import { toast } from 'react-toastify'
 
 import { Link } from 'react-router-dom'
 
 function Home() {
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    message: '',
+  })
+
+  const [errors, setErrors] = useState({})
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    })
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+
+    emailjs
+      .send(
+        'service_y6z2zqi', // Service ID
+        'template_5u8uicl', // Template ID
+        {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          message: formData.message,
+        },
+        'pU57C4XJ45ztsD15H' // Public key
+      )
+      .then(
+        (result) => {
+          console.log(result.text)
+          toast.success('Thanks for contacting!')
+        },
+        (error) => {
+          console.error(error.text)
+          toast.error('Failed to send message ')
+        }
+      )
+
+    // Simple required field validation
+    const newErrors = {}
+    if (!formData.firstName.trim())
+      newErrors.firstName = 'First name is required'
+    if (!formData.lastName.trim()) newErrors.lastName = 'Last name is required'
+    if (!formData.email.trim()) newErrors.email = 'Email is required'
+    if (!formData.message.trim()) newErrors.message = 'Message is required'
+
+    setErrors(newErrors)
+
+    if (Object.keys(newErrors).length === 0) {
+      console.log('Form Submitted:', formData)
+      // You can now send the form data to backend here
+    }
+  }
+
   const projects = [
     {
       title: 'E-Commerce website using Redux',
@@ -80,7 +141,8 @@ function Home() {
           gap: '60px',
           flexWrap: 'wrap',
           padding: '140px 20px 80px',
-          backgroundColor: '#f5f5f5',
+
+          marginTop: '100px',
         }}>
         {/* Left Side Content */}
         <div style={{ maxWidth: '500px' }}>
@@ -152,7 +214,7 @@ function Home() {
           }}>
           {[
             'src/assets/images.png',
-            'src/assets/download.jpeg',
+            'src/assets/a9dcc740cad3149598307b5de8bc10c3.jpg',
             'src/assets/java-script-js-logo-png_seeklogo-303341 (1).png',
             'src/assets/524-5245981_react-js-logo-png-transparent-png-download.png',
           ].map((src, index) => (
@@ -329,7 +391,7 @@ function Home() {
             fontSize: '2rem',
             marginBottom: '30px',
           }}>
-          Contact Me
+          Contact With Me
         </h1>
 
         <div
@@ -402,14 +464,16 @@ function Home() {
           </div>
         </div>
 
-        <div
+        {/* LinkedIn Card */}
+
+        {/* <div
           style={{
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
             marginTop: '50px',
           }}>
-          {/* LinkedIn Card */}
+          
           <div
             style={{
               backgroundColor: '#fff',
@@ -430,28 +494,120 @@ function Home() {
               https://in.linkedin.com/
             </p>
           </div>
-        </div>
-
-        {/* <div>
-          <h1>Get in touch</h1>
-          <form>
-            <TextField
-              id="outlined-basic"
-              label="First Name"
-              variant="outlined"
-            />
-            <TextField 
-              id="outlined-basic"
-              label=" LastName"
-              variant="outlined"
-            />
-
-            <TextField id="outlined-basic" label="Email" variant="outlined" />
-
-            <TextField id="outlined-basic" label="Message" variant="outlined" />
-            <Button variant="outlined">Submit</Button>
-          </form>
         </div> */}
+
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '40px',
+            padding: '40px 20px',
+            backgroundColor: '#f9f9f9',
+            borderRadius: '12px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+            marginTop: '20px',
+          }}>
+          {/* Left - Image */}
+          <div style={{ flex: '1', minWidth: '300px', textAlign: 'center' }}>
+            <img
+              src="src/assets/contact-me-1.png"
+              alt="Contact Illustration"
+              style={{
+                maxWidth: '100%',
+                height: 'auto',
+                borderRadius: '15px',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+              }}
+            />
+          </div>
+
+          {/* Right - Contact Form */}
+
+          <div
+            style={{
+              flex: '1',
+              minWidth: '300px',
+              padding: '20px',
+              backgroundColor: 'white',
+              borderRadius: '12px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+            }}>
+            <h1
+              style={{
+                textAlign: 'center',
+                color: 'skyblue',
+                marginBottom: '20px',
+                fontWeight: '700',
+              }}>
+              Get in Touch
+            </h1>
+            <form
+              onSubmit={handleSubmit}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '15px',
+              }}>
+              <TextField
+                label="First Name"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleChange}
+                error={!!errors.firstName}
+                helperText={errors.firstName}
+                variant="outlined"
+                fullWidth
+              />
+              <TextField
+                label="Last Name"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleChange}
+                error={!!errors.lastName}
+                helperText={errors.lastName}
+                variant="outlined"
+                fullWidth
+              />
+              <TextField
+                label="Email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                error={!!errors.email}
+                helperText={errors.email}
+                variant="outlined"
+                fullWidth
+              />
+              <TextField
+                label="Message"
+                name="message"
+                value={formData.message}
+                onChange={handleChange}
+                error={!!errors.message}
+                helperText={errors.message}
+                variant="outlined"
+                multiline
+                rows={4}
+                fullWidth
+              />
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                style={{
+                  padding: '12px',
+                  fontWeight: 'bold',
+                  fontSize: '16px',
+                  backgroundColor: 'skyblue',
+                }}>
+                Submit
+              </Button>
+            </form>
+          </div>
+        </div>
       </section>
     </div>
   )
